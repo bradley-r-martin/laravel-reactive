@@ -32,11 +32,8 @@ class LaravelReactiveServiceProvider extends ServiceProvider
 
             // Publishing the views.
             $this->publishes([
-                __DIR__.'/../publishables/resources/views' => resource_path('views/vendor/laravel-reactive'),
-            ], 'views');
-            $this->publishes([
                 __DIR__.'/../publishables' => base_path(),
-            ], 'framework');
+            ], 'laravel-assets');
 
             // Publishing assets.
             /*$this->publishes([

@@ -29,7 +29,6 @@
         }
     },
     "scripts": {
-        "post-update-cmd": "@php artisan vendor:publish --tag=framework --force",
         "test": "vendor/bin/phpunit",
         "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
     },
