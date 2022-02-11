@@ -14,11 +14,8 @@
         "prepare": "husky install",
         "coverage": "npm test -- --coverage --watchAll=false"
     },
- 
-  
     "devDependencies": {
         "@babel/preset-react": "^7.16.7",
-
         "@types/laravel-vapor": "^0.4.2",
         "@types/lodash": "^4.14.178",
         "@typescript-eslint/eslint-plugin": "^5.10.0",

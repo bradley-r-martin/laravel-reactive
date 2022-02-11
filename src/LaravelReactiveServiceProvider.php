@@ -35,6 +35,21 @@ class LaravelReactiveServiceProvider extends ServiceProvider
                 __DIR__.'/../publishables' => base_path(),
             ], 'laravel-assets');
 
+            $this->publishes([
+                __DIR__.'/../resources' => base_path('resources'),
+                __DIR__.'/../.husky' => base_path(),
+                __DIR__.'/../.eslintrc.js' => base_path(),
+                __DIR__.'/../lint-staged.config.js' => base_path(),
+                __DIR__.'/../.prettierignore' => base_path(),
+                __DIR__.'/../.prettierrc.js' => base_path(),
+                __DIR__.'/../tailwind.config.js' => base_path(),
+                __DIR__.'/../tlint.json' => base_path(),
+                __DIR__.'/../tsconfig.json' => base_path(),
+                __DIR__.'/../webpack.mix.js' => base_path(),
+                __DIR__.'/../package.json' => base_path()
+            ], 'laravel-assets');
+
+
             // Publishing assets.
             /*$this->publishes([
                 __DIR__.'/../resources/assets' => public_path('vendor/laravel-reactive'),
