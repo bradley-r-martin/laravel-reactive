@@ -1,0 +1,5 @@
+{
+    "preset": "laravel",
+    "disabled": ["NoInlineVarDocs"],
+    "excluded": ["vendor/", "node_modules/"]
+}

@@ -16,7 +16,7 @@ class LaravelReactiveServiceProvider extends ServiceProvider
          */
         // $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'laravel-reactive');
     
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'laravel-reactive');
+        $this->loadViewsFrom(__DIR__.'/../publishables/resources/views', 'laravel-reactive');
         
         // $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
         if(env('REACTIVE')){
@@ -32,8 +32,11 @@ class LaravelReactiveServiceProvider extends ServiceProvider
 
             // Publishing the views.
             $this->publishes([
-                __DIR__.'/../resources/views' => resource_path('views/vendor/laravel-reactive'),
+                __DIR__.'/../publishables/resources/views' => resource_path('views/vendor/laravel-reactive'),
             ], 'views');
+            $this->publishes([
+                __DIR__.'/../publishables/resources' => base_path(),
+            ], 'framework');
 
             // Publishing assets.
             /*$this->publishes([
