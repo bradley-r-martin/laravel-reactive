@@ -37,7 +37,7 @@ class LaravelReactiveServiceProvider extends ServiceProvider
 
             $this->publishes([
                 __DIR__.'/../resources' => base_path('resources'),
-                __DIR__.'/../.husky' => base_path(),
+                // __DIR__.'/../.husky' => base_path(),
                 __DIR__.'/../.eslintrc.js' => base_path(),
                 __DIR__.'/../lint-staged.config.js' => base_path(),
                 __DIR__.'/../.prettierignore' => base_path(),
