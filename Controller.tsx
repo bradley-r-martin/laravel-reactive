@@ -1,7 +1,7 @@
 import { NavigateFunction, useNavigate, useParams } from 'react-router-dom';
 import React, { createContext } from 'react';
 
-import Subscriptions from '../Services/Subscriptions';
+import Subscriptions from './Subscriptions';
 import _ from 'lodash';
 import axios from 'axios';
 

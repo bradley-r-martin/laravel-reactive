@@ -2,7 +2,7 @@ import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 
 import Base from './Layouts/Base';
 import E404 from './Controllers/Exceptions/E404';
-import { LocationState } from './Types/LocationState';
+import { LocationState } from '../../LocationState';
 import React from 'react';
 
 const Router = (): JSX.Element => {
