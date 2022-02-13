@@ -37,16 +37,16 @@ class LaravelReactiveServiceProvider extends ServiceProvider
 
             $this->publishes([
                 __DIR__.'/../resources' => base_path('resources'),
-                // __DIR__.'/../.husky' => base_path(),
-                __DIR__.'/../.eslintrc.js' => base_path(),
-                __DIR__.'/../lint-staged.config.js' => base_path(),
-                __DIR__.'/../.prettierignore' => base_path(),
-                __DIR__.'/../.prettierrc.js' => base_path(),
-                __DIR__.'/../tailwind.config.js' => base_path(),
-                __DIR__.'/../tlint.json' => base_path(),
-                __DIR__.'/../tsconfig.json' => base_path(),
-                __DIR__.'/../webpack.mix.js' => base_path(),
-                __DIR__.'/../package.json' => base_path()
+                 __DIR__.'/../.husky' => base_path(),
+                __DIR__.'/../.eslintrc.js' => base_path('.eslintrc.js'),
+                __DIR__.'/../lint-staged.config.js' => base_path('lint-staged.config.js'),
+                __DIR__.'/../.prettierignore' => base_path('.prettierignore'),
+                __DIR__.'/../.prettierrc.js' => base_path('.prettierrc.js'),
+                __DIR__.'/../tailwind.config.js' => base_path('tailwind.config.js'),
+                __DIR__.'/../tlint.json' => base_path('tlint.json'),
+                __DIR__.'/../tsconfig.json' => base_path('tsconfig.json'),
+                __DIR__.'/../webpack.mix.js' => base_path('webpack.mix.js'),
+                __DIR__.'/../package.json' => base_path('package.json')
             ], 'laravel-assets');
 
 
