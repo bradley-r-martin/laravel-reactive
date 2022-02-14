@@ -16,52 +16,14 @@ class LaravelReactiveServiceProvider extends ServiceProvider
          */
         // $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'laravel-reactive');
     
-        $this->loadViewsFrom(__DIR__.'/../publishables/resources/views', 'laravel-reactive');
-        
         // $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
-        if(env('REACTIVE')){
-            $this->loadRoutesFrom(__DIR__.'/routes.php');
-        }
-
-        $this->loadRoutesFrom(__DIR__.'/reactive-route.php');
-
+  
+        $this->loadRoutesFrom(__DIR__.'/routes.php');
+        
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__.'/../config/config.php' => config_path('laravel-reactive.php'),
             ], 'config');
-
-            // Publishing the views.
-            $this->publishes([
-                __DIR__.'/../publishables' => base_path(),
-            ], 'laravel-assets');
-
-            $this->publishes([
-                __DIR__.'/../resources' => base_path('resources'),
-                 __DIR__.'/../.husky' => base_path(),
-                __DIR__.'/../.eslintrc.js' => base_path('.eslintrc.js'),
-                __DIR__.'/../lint-staged.config.js' => base_path('lint-staged.config.js'),
-                __DIR__.'/../.prettierignore' => base_path('.prettierignore'),
-                __DIR__.'/../.prettierrc.js' => base_path('.prettierrc.js'),
-                __DIR__.'/../tailwind.config.js' => base_path('tailwind.config.js'),
-                __DIR__.'/../tlint.json' => base_path('tlint.json'),
-                __DIR__.'/../tsconfig.json' => base_path('tsconfig.json'),
-                __DIR__.'/../webpack.mix.js' => base_path('webpack.mix.js'),
-                __DIR__.'/../package.json' => base_path('package.json')
-            ], 'laravel-assets');
-
-
-            // Publishing assets.
-            /*$this->publishes([
-                __DIR__.'/../resources/assets' => public_path('vendor/laravel-reactive'),
-            ], 'assets');*/
-
-            // Publishing the translation files.
-            /*$this->publishes([
-                __DIR__.'/../resources/lang' => resource_path('lang/vendor/laravel-reactive'),
-            ], 'lang');*/
-
-            // Registering package commands.
-            // $this->commands([]);
         }
     }
 
