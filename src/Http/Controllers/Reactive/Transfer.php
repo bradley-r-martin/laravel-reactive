@@ -23,7 +23,7 @@ class Transfer extends Controller
                 "file" => [
                     "status"=> "staged",
                     "id" => $uuid,
-                    "store" => url('files')."/"
+                    "store" => url('storage')."/"
                 ],
                 "headers" => [
                     "uuid" => $uuid,
@@ -64,14 +64,10 @@ class Transfer extends Controller
    public function stage(){
         if (config("filesystems.default") === "local") {
             $file = file_get_contents("php://input");
-            Storage::disk("local")->put("tmp/" . request()->header("uuid"), $file);
+            Storage::disk("local")->put("public/tmp/" . request()->header("uuid"), $file);
             return true;
         } else {
             return abort("404");
         }
-   }
-
-   public function serve($file){
-    return response()->file($file);
    }
 }
