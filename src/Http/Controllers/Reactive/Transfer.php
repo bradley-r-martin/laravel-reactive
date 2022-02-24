@@ -23,7 +23,7 @@ class Transfer extends Controller
                 "file" => [
                     "status"=> "staged",
                     "id" => $uuid,
-                    "store" => url('files/')
+                    "store" => url('files')."/"
                 ],
                 "headers" => [
                     "uuid" => $uuid,
