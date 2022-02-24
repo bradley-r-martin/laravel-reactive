@@ -48,4 +48,14 @@ class Transfer extends Controller
             ];
         }
    }
+
+   public function stage(){
+        if (config("filesystems.default") === "local") {
+            $file = file_get_contents("php://input");
+            Storage::disk("local")->put("tmp/" . request()->header("uuid"), $file);
+            return true;
+        } else {
+            return abort("404");
+        }
+   }
 }
