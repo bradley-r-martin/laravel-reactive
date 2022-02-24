@@ -70,4 +70,8 @@ class Transfer extends Controller
             return abort("404");
         }
    }
+
+   public function serve($file){
+    return response()->file($file);
+   }
 }
