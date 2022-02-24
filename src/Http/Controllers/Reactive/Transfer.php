@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 
 class Transfer extends Controller
 {
-
+    
    public function request(){
         $uuid = Str::uuid();
         $location = "tmp";
@@ -20,6 +20,11 @@ class Transfer extends Controller
                 "bucket" => "",
                 "key" => "$location/$uuid",
                 "url" => url("/reactive/signed-transfer"),
+                "file" => [
+                    "status"=> "staged",
+                    "id" => $uuid,
+                    "store" => url('files/')
+                ],
                 "headers" => [
                     "uuid" => $uuid,
                 ],
@@ -42,6 +47,13 @@ class Transfer extends Controller
                 "bucket" => $bucket,
                 "key" => "$location/$uuid",
                 "url" => (string) $request->getUri(),
+
+                "file" => [
+                    "status"=> "staged",
+                    "id" => $uuid,
+                    "store" => "https://$bucket.s3.ap-southeast-2.amazonaws.com/"
+                ],
+
                 "headers" => [
                     "uuid" => $uuid,
                 ],
