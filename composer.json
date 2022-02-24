@@ -20,12 +20,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Sihq\\LaravelReactive\\": "src"
+            "Sihq\\Reactive\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Sihq\\LaravelReactive\\Tests\\": "tests"
+            "Sihq\\Reactive\\Tests\\": "tests"
         }
     },
     "scripts": {
@@ -38,10 +38,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Sihq\\LaravelReactive\\LaravelReactiveServiceProvider"
+                "Sihq\\Reactive\\ReactiveServiceProvider"
             ],
             "aliases": {
-                "LaravelReactive": "Sihq\\LaravelReactive\\LaravelReactiveFacade"
+                "Reactive": "Sihq\\Reactive\\ReactiveFacade"
             }
         }
     }

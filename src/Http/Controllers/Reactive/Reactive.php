@@ -1,12 +1,13 @@
 <?php
 
-namespace Sihq\LaravelReactive;
+namespace Sihq\Reactive\Http\Controllers\Reactive;
 
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\BroadcastsEvents;
-class LaravelReactive{
+
+class Reactive{
     protected $protected = ['protected','rules','subscribe','route'];
 
 
