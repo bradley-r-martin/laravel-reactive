@@ -13,7 +13,7 @@ class ReactiveX{
     }
 
     public function parse(){
-        $bundle = request()->input();
+        $bundle = request()->payload;
         $debug = request()->header('debug');
         if(!$debug){
             $bundle = $this->decode($bundle);
