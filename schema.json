@@ -1,0 +1,38 @@
+{
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "$schema": {
+            "type": "string"
+        },
+        "version": {
+            "$ref": "#/definitions/semver",
+            "description": "The version of the plugin. Changes to your manifest should cause a version change. This version string must follow the semver standard (http://semver.org)."
+        },
+        "id": {
+            "type": "string",
+            "description": "A unique identifier for this plugin in reverse domain notation. E.g: com.company.plugin",
+            "maxLength": 64
+        },
+        "name": {
+            "type": "string",
+            "description": "A display name for the plugin.",
+            "maxLength": 30
+        },
+        "payload": {
+            "type": "array"
+        }
+
+    },
+    "required": ["version", "id", "name", "description", "dependencies"],
+    "definitions": {
+        "semver": {
+            "type": "string",
+            "maxLength": 256,
+            "pattern": "^([0-9]|[1-9]+[0-9]*)\\.([0-9]|[1-9]+[0-9]*)\\.([0-9]|[1-9]+[0-9]*)$"
+        }
+    },
+    "dependencies": {
+        "module": {}
+    }
+}
