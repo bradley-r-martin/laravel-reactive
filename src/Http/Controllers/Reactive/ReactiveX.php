@@ -16,7 +16,7 @@ class ReactiveX{
     }
 
     public function decode($bundle){
-        return json_decode(base64_decode($bundle));
+        return is_string($bundle) ? json_decode(base64_decode($bundle)) : null;
     }
     public function encode($bundle){
         return base64_encode(json_encode($bundle));
