@@ -13,7 +13,7 @@ use Laravel\Vapor\Contracts\SignedStorageUrlController as SignedStorageUrlContro
 class Transfer extends Controller implements SignedStorageUrlControllerContract
 {
 
-    public function store(){
+    public function store(Request $request){
         $uuid = Str::uuid();
         $location = "tmp";
         $expires = "+20 minutes";
@@ -39,7 +39,7 @@ class Transfer extends Controller implements SignedStorageUrlControllerContract
             $this->ensureEnvironmentVariablesAreAvailable(request());
 
             $client = $this->storageClient();
-    
+            $bucket = $request->input('bucket') ?: $_ENV['AWS_BUCKET'];
             $uuid = (string) Str::uuid();
     
             $key = request()->input('key') ?: 'tmp/'.$uuid;
