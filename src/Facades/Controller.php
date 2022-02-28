@@ -78,4 +78,8 @@ class Controller{
         return $variables;
     }
 
+    public function onMount(){}
+
+    public function onRender(){}
+
 }

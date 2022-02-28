@@ -23,8 +23,14 @@ class ReactiveX{
     }
 
     public function parse(){
+
+        $states = $this->_payloads->map(function($payload){
+            $controller = $payload->controller();
+            optional($controller)->onMount();
+            return optional($controller)->state() ?? [];
+        });
  
-        dd($this->_payloads);
+        dd($states);
         //  Accepts reactive schema payload and 
     }
 

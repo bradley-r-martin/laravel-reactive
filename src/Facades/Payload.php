@@ -26,7 +26,11 @@ class Payload{
 
     // return controller;
     public function controller(){
-        return new $this->_controller($this);
+        if(class_exists($this->_controller)){
+            $controller_name = $this->_controller;
+            return new $controller_name($this);
+        }
+        return null;
     }
 
 }
