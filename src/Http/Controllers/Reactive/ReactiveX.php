@@ -27,11 +27,15 @@ class ReactiveX{
         $states = $this->_payloads->map(function($payload){
             $controller = $payload->controller();
             optional($controller)->onMount();
-            return optional($controller)->state() ?? [];
+            return [
+                "controller"=> $controller ? get_class($controller) : null,
+                "state" => optional($controller)->state() ?? []
+            ];
         });
- 
-        dd($states);
-        //  Accepts reactive schema payload and 
+
+        return [
+            "payload"=>  $this->_debug ? $states : $this->encode($states)
+        ];
     }
 
 }
