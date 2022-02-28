@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Validator;
 class Controller{
     protected Payload $_payload;
 
-    public function __constructor(Payload $Paylod){
+    public function __construct(Payload $Paylod){
         $this->_payload = $payload;
         $this->hydrate();
     }

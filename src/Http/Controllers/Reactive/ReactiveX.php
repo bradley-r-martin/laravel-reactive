@@ -5,6 +5,16 @@ use Sihq\Reactive\Facades\Payload;
 
 class ReactiveX{
 
+    protected $_payloads = [];
+
+    public function __construct(){
+        $bundle = request()->payload;
+        $debug = request()->header('debug');
+        $this->_payloads = collect($debug ? $bundle : $this->decode($bundle))->map(function($payload){
+            return new Payload($payload);
+        });
+    }
+
     public function decode($bundle){
         return json_decode(base64_decode($bundle));
     }
@@ -13,16 +23,8 @@ class ReactiveX{
     }
 
     public function parse(){
-        $bundle = request()->payload;
-        $debug = request()->header('debug');
-        if(!$debug){
-            $bundle = $this->decode($bundle);
-        }
-        $bundle = collect($bundle)->map(function($payload){
-            return new Payload($payload);
-        });
-
-        dd($bundle);
+ 
+        dd($this->_payloads);
         //  Accepts reactive schema payload and 
     }
 

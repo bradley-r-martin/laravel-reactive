@@ -8,11 +8,10 @@ class Payload{
     protected $_props = []; 
 
 
-    public function __constructor($payload){
+    public function __construct($payload){
         $this->_controller = optional($payload)['controller'];
         $this->_state = optional($payload)['state'];
         $this->_props = optional($payload)['props'];
-        $this->hydrate();
     }
 
     // return state
