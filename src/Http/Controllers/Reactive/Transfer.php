@@ -13,7 +13,7 @@ use Laravel\Vapor\Contracts\SignedStorageUrlController as SignedStorageUrlContro
 class Transfer extends Controller implements SignedStorageUrlControllerContract
 {
 
-    public function request(){
+    public function store(){
         $uuid = Str::uuid();
         $location = "tmp";
         $expires = "+20 minutes";
