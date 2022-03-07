@@ -5,13 +5,17 @@ use Sihq\Reactive\Facades\Payload;
 
 class ReactiveX{
 
+    protected $_debug = false;
     protected $_payloads = [];
 
     public function __construct(){
         $bundle = request()->payload;
-        $debug = request()->header('debug');
-        $this->_payloads = collect($debug ? $bundle : $this->decode($bundle))->map(function($payload){
-            return new Payload($payload);
+        $this->_debug = (request()->header('x-debug') === "true");
+     
+        $payload = ($this->_debug ? $bundle : $this->decode($bundle));
+
+        $this->_payloads = collect($payload)->map(function($payload){
+            return new Payload((object) $payload);
         });
     }
 
@@ -23,10 +27,24 @@ class ReactiveX{
     }
 
     public function parse(){
-
+      
         $states = $this->_payloads->map(function($payload){
             $controller = $payload->controller();
-            optional($controller)->onMount();
+            if($payload->action() === 'onMount'){
+                if(method_exists($controller,'onMount')){
+                    $controller->onMount();
+                }
+            }else if($payload->action() === 'onRequest'){
+                $event = $payload->event();
+                if(method_exists($controller,$event)){
+                    $controller->$event();
+                }
+            }
+            if(method_exists($controller,'onDispatch')){
+                $controller->onDispatch();
+            }
+          
+           
             return [
                 "controller"=> $controller ? get_class($controller) : null,
                 "state" => optional($controller)->state() ?? []
@@ -34,7 +52,7 @@ class ReactiveX{
         });
 
         return [
-            "payload"=>  $this->_debug ? $states : $this->encode($states)
+            "payload"=> $this->_debug ? $states : $this->encode($states)
         ];
     }
 
