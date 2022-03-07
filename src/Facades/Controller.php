@@ -28,6 +28,10 @@ class Controller{
         $validator = Validator::make($this->state(), optional($this)->rules ?? [])->validate();
     }
 
+    public function redirect($to = ''){
+      //  throw new \Illuminate\Http\Exceptions\HttpResponseException(redirect($to));
+    }
+
     // Hydrate the payload state into the controller
     protected function hydrate(){
         $state = $this->_payload->state();

@@ -11,7 +11,6 @@ class ReactiveX{
     public function __construct(){
         $bundle = request()->payload;
         $this->_debug = (request()->header('x-debug') === "true");
-     
         $payload = ($this->_debug ? $bundle : $this->decode($bundle));
 
         $this->_payloads = collect($payload)->map(function($payload){
@@ -44,7 +43,6 @@ class ReactiveX{
                 $controller->onDispatch();
             }
           
-           
             return [
                 "controller"=> $controller ? get_class($controller) : null,
                 "state" => optional($controller)->state() ?? []
