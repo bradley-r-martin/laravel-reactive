@@ -41,14 +41,14 @@ class Controller{
                 if(optional($value)[$model_key]){
                     $model = (new $type)->find(optional($value)[$model_key]);
                     if($model && !is_null($value)){
-                        $model->fill($value);
+                        $model->fill((array) $value);
                         $this->{$key} = $model;
                     }else{
-                        $this->{$key} = (new $type)->fill($value ?? []);
+                        $this->{$key} = (new $type)->fill((array) $value ?? []);
                     }
                    
                 }else{
-                    $this->{$key} = (new $type)->fill($value ?? []);
+                    $this->{$key} = (new $type)->fill((array) $value ?? []);
                 }
              
             }else{
