@@ -29,7 +29,7 @@ class Controller{
     }
 
     public function redirect($to = ''){
-      //  throw new \Illuminate\Http\Exceptions\HttpResponseException(redirect($to));
+        throw new \Illuminate\Http\Exceptions\HttpResponseException(redirect($to));
     }
 
     // Hydrate the payload state into the controller

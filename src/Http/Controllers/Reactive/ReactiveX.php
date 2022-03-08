@@ -26,17 +26,22 @@ class ReactiveX{
     }
 
     public function parse(){
-      
+
+
+       // This works but not great
+        $this->_payloads->filter(function($payload){return $payload->action() === 'onRequest';})->map(function($payload){
+            $controller = $payload->controller();
+            $event = $payload->event();
+            if(method_exists($controller,$event)){
+                $controller->$event();
+            }
+        });
+    
         $states = $this->_payloads->map(function($payload){
             $controller = $payload->controller();
             if($payload->action() === 'onMount'){
                 if(method_exists($controller,'onMount')){
                     $controller->onMount();
-                }
-            }else if($payload->action() === 'onRequest'){
-                $event = $payload->event();
-                if(method_exists($controller,$event)){
-                    $controller->$event();
                 }
             }
             if(method_exists($controller,'onDispatch')){
