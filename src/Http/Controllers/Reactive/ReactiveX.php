@@ -2,11 +2,13 @@
 namespace Sihq\Reactive\Http\Controllers\Reactive;
 
 use Sihq\Reactive\Facades\Payload;
+use Illuminate\Support\Facades\Response;
 
 class ReactiveX{
 
     protected $_debug = false;
     protected $_payloads = [];
+    protected $_redirect_to = null;
 
     public function __construct(){
         $bundle = request()->payload;
@@ -29,11 +31,16 @@ class ReactiveX{
 
 
        // This works but not great
+
         $this->_payloads->filter(function($payload){return $payload->action() === 'onRequest';})->map(function($payload){
             $controller = $payload->controller();
-            $event = $payload->event();
-            if(method_exists($controller,$event)){
-                $controller->$event();
+            try{
+                $event = $payload->event();
+                if(method_exists($controller,$event)){
+                    $controller->$event();
+                }
+            }catch(\Illuminate\Http\Exceptions\HttpResponseException $e){
+               $this->_redirect_to = $e->getResponse()->getTargetUrl();
             }
         });
     
@@ -54,9 +61,9 @@ class ReactiveX{
             ];
         });
 
-        return [
+        return array_merge([
             "payload"=> $this->_debug ? $states : $this->encode($states)
-        ];
+        ],($this->_redirect_to ? ['redirect'=>  $this->_redirect_to] : []));
     }
 
 }
