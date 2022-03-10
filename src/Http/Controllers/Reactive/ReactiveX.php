@@ -2,6 +2,8 @@
 namespace Sihq\Reactive\Http\Controllers\Reactive;
 
 use Sihq\Reactive\Facades\Payload;
+use Sihq\Reactive\Facades\Thread;
+
 use Illuminate\Support\Facades\Response;
 
 class ReactiveX{
@@ -29,41 +31,44 @@ class ReactiveX{
 
     public function parse(){
 
+       // Convert payloads into threads
+       $threads = $this->_payloads->map(function($payload){
+            return new Thread($payload);
+       });
 
-       // This works but not great
-
-        $this->_payloads->filter(function($payload){return $payload->action() === 'onRequest';})->map(function($payload){
-            $controller = $payload->controller();
-            try{
-                $event = $payload->event();
-                if(method_exists($controller,$event)){
-                    $controller->$event();
-                }
-            }catch(\Illuminate\Http\Exceptions\HttpResponseException $e){
-               $this->_redirect_to = $e->getResponse()->getTargetUrl();
+        // Run primary controllers event
+        $threads->filter(function($thread){
+            return $thread->payload()->action() === 'onRequest';
+        })->map(function($thread){
+            $event = $thread->payload()->event();
+            if(method_exists($thread->controller(),$event)){
+                $thread->execute(function() use($thread, $event){ $thread->controller()->$event(); });
             }
         });
-    
-        $states = $this->_payloads->map(function($payload){
-            $controller = $payload->controller();
-            if($payload->action() === 'onMount'){
-                if(method_exists($controller,'onMount')){
-                    $controller->onMount();
-                }
-            }
-            if(method_exists($controller,'onDispatch')){
-                $controller->onDispatch();
-            }
-          
-            return [
-                "controller"=> $controller ? get_class($controller) : null,
-                "state" => optional($controller)->state() ?? []
-            ];
+
+        // run all controller onMount
+        $threads->filter(function($thread){
+            return $thread->payload()->action() === 'onMount';
+        })->map(function($thread){
+            $thread->execute(function() use($thread){ $thread->controller()->onMount(); });
         });
+
+        // Run all controllers onDispatch
+        $threads->map(function($thread){
+            if(method_exists($thread->controller(),'onDispatch')){
+                $thread->execute(function() use($thread){ $thread->controller()->onDispatch(); });
+            }
+        });
+
+        $states = $threads->map(function($thread){
+            return $thread->response();
+        });
+
+        $redirect = $states->filter(function($state){return !!$state['redirect']; })->map(function($state){return $state['redirect']; })->first();
 
         return array_merge([
             "payload"=> $this->_debug ? $states : $this->encode($states)
-        ],($this->_redirect_to ? ['redirect'=>  $this->_redirect_to] : []));
+        ],($redirect ? ['redirect'=>  $redirect] : []));
     }
 
 }
