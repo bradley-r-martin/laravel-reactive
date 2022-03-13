@@ -11,11 +11,11 @@ use Illuminate\Support\Str;
 use GuzzleHttp\Psr7\MimeType;
 
 // Traits
-use Sihq\Reactive\Traits\UsesUuid;
+use Sihq\Reactive\Traits\UuidTrait;
 
 class File extends Model
 {
-    use UsesUuid, SoftDeletes;
+    use UuidTrait, SoftDeletes;
 
     protected $fillable = [
         "id", 
