@@ -1,12 +1,12 @@
 <?php
 
-namespace Sihq\Reactive\Casts;
+namespace Sihq\Casts;
 
 use Illuminate\Contracts\Database\Eloquent\Castable;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Support\Facades\Crypt;
 
-use Sihq\Reactive\Models\File;
+use Sihq\Models\File;
 
 class FileCast implements Castable
 {

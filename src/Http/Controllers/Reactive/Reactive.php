@@ -1,118 +1,74 @@
 <?php
+namespace Sihq\Http\Controllers\Reactive;
 
-namespace Sihq\Reactive\Http\Controllers\Reactive;
+use Sihq\Facades\Payload;
+use Sihq\Facades\Thread;
 
-use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\BroadcastsEvents;
+use Illuminate\Support\Facades\Response;
 
 class Reactive{
-    protected $protected = ['protected','rules','subscribe','route'];
 
+    protected $_debug = false;
+    protected $_payloads = [];
+    protected $_redirect_to = null;
 
-    public function redirect($to){
-        throw new \Illuminate\Http\Exceptions\HttpResponseException(redirect($to));
-    }
-    public function subscriptions(){
-        return array_merge($this->subscribableModels()->toArray(), optional($this)->subscribe ?? []);
-    }
-    protected function subscribableModels(){
-        // Identifies subscribable models for frontend
-        return $this->controllerProperties()->map(function($property,$key){
-            $subscription = null;
-            try{
-                // If property is a model and impliments the BroadcastEvents trait.
-                if (is_a($this->{$key}, Model::class) && in_array(BroadcastsEvents::class, class_uses($this->{$key}))) {
-                    $type = optional((new \ReflectionProperty($this, $key))->getType())->getName();
-                    $key = optional($this->{$key})->{optional($this->{$key})->getKeyName()};
-                    if($key){
-                        $subscription = str_replace('\\','.',$type).".$key";
-                    }
-                }
-            }catch (\Exception $e){}
-            return $subscription;
-        })->whereNotNull()->flatten();
+    public function __construct(){
+        $bundle = request()->payload;
+        $this->_debug = (request()->header('x-debug') === "true");
+        $payload = ($this->_debug ? $bundle : $this->decode($bundle));
+
+        $this->_payloads = collect($payload)->map(function($payload){
+            return new Payload((object) $payload);
+        });
     }
 
-    protected function controllerProperties(){
-        // Returns a list of controller properties
-        return collect(get_object_vars($this))->except($this->protected);
+    public function decode($bundle){
+        return is_string($bundle) ? json_decode(base64_decode($bundle)) : null;
+    }
+    public function encode($bundle){
+        return base64_encode(json_encode($bundle));
     }
 
-    public function dehydrate(){
-       
-        $variables = get_object_vars($this);
-        $variables = collect($variables)->map(function($variable,$property){
-            if(is_string($variable) || is_bool($variable)){
-                return $variable;
-            }else  if(is_object($variable)){
-                $type = null;
-                try{
-                    $type = optional((new \ReflectionProperty($this, $property))->getType())->getName();
-                }catch(\Exception $e){}
+    public function parse(){
 
-                $object = collect($variable)->toArray();
-                return (count($object) > 0 ?   $object : null);
-            }else if(is_array($variable)){
-                return $variable;
+       // Convert payloads into threads
+       $threads = $this->_payloads->map(function($payload){
+            return new Thread($payload);
+       });
+
+        // Run primary controllers event
+        $threads->filter(function($thread){
+            return $thread->payload()->action() === 'onRequest';
+        })->map(function($thread){
+            $event = $thread->payload()->event();
+            if(method_exists($thread->controller(),$event)){
+                $thread->execute(function() use($thread, $event){ $thread->controller()->$event(); });
             }
-        })->except($this->protected)->toArray();
-        return $variables;
-    }
+        });
 
-    public function hydrate($state = null){
-        $state = $state ?? request()->state ?? [];
-        foreach($state as $key=>$value){
-            $type = null;
-            try{
-                $type = optional((new \ReflectionProperty($this, $key))->getType())->getName();
-            }catch(\Exception $e){}
-            if($type){
-                $model_key = optional(new $type)->getKeyName();
-                if(optional($value)[$model_key]){
-                    $model = (new $type)->find(optional($value)[$model_key]);
-                    if($model && !is_null($value)){
-                        $model->fill($value);
-                        $this->{$key} = $model;
-                    }else{
-                        $this->{$key} = (new $type)->fill($value ?? []);
-                    }
-                   
-                }else{
-                    $this->{$key} = (new $type)->fill($value ?? []);
-                }
-             
-            }else{
-                $this->{$key} = $value;
+        // run all controller onMount
+        $threads->filter(function($thread){
+            return $thread->payload()->action() === 'onMount';
+        })->map(function($thread){
+            $thread->execute(function() use($thread){ $thread->controller()->onMount(); });
+        });
+
+        // Run all controllers onDispatch
+        $threads->map(function($thread){
+            if(method_exists($thread->controller(),'onDispatch')){
+                $thread->execute(function() use($thread){ $thread->controller()->onDispatch(); });
             }
-        }
-    }
+        });
 
-    public function validate(){
-        $validator = Validator::make($this->dehydrate(), $this->rules)->validate();
-    }
+        $states = $threads->map(function($thread){
+            return $thread->response();
+        });
 
-    public function onRender(){
+        $redirect = $states->filter(function($state){return !!$state['redirect']; })->map(function($state){return $state['redirect']; })->first();
 
-    }
-
-
-    public static function route(){
-        $controller_name = request()->controller;
-        $controller = new $controller_name();
-        $controller->hydrate();
-        $action = request()->action;
-        if(method_exists($controller, $action)){
-            $controller->$action();
-        }
-        $controller->onRender();
-        $state = $controller->dehydrate();
-        return [
-            'subscriptions'=> $controller->subscriptions(),
-            'state'=> $state,
-            'version'=> '1234'
-        ];
+        return array_merge([
+            "payload"=> $this->_debug ? $states : $this->encode($states)
+        ],($redirect ? ['redirect'=>  $redirect] : []));
     }
 
 }

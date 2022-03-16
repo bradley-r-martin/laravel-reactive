@@ -1,5 +1,5 @@
 <?php
-namespace Sihq\Reactive\Facades;
+namespace Sihq\Facades;
 
 class Thread{
 

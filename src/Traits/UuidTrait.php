@@ -1,6 +1,6 @@
 <?php
 
-namespace Sihq\Reactive\Traits;
+namespace Sihq\Traits;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;

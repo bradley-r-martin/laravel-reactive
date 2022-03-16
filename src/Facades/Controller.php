@@ -1,7 +1,7 @@
 <?php
-namespace Sihq\Reactive\Facades;
+namespace Sihq\Facades;
 
-use Sihq\Reactive\Facades\Payload;
+use Sihq\Facades\Payload;
 
 use Illuminate\Support\Facades\Validator;
 

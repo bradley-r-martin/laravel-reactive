@@ -1,6 +1,6 @@
 <?php
 
-namespace Sihq\Reactive\Casts;
+namespace Sihq\Casts;
 
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 

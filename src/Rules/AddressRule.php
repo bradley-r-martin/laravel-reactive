@@ -1,6 +1,6 @@
 <?php
 
-namespace Sihq\Reactive\Rules;
+namespace Sihq\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
 

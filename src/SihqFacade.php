@@ -1,13 +1,13 @@
 <?php
 
-namespace Sihq\Reactive;
+namespace Sihq;
 
 use Illuminate\Support\Facades\Facade;
 
-class ReactiveFacade extends Facade
+class SihqFacade extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return 'reactive';
+        return 'sihq';
     }
 }

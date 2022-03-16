@@ -1,5 +1,5 @@
 <?php
-namespace Sihq\Reactive\Http\Controllers\Reactive;
+namespace Sihq\Http\Controllers\Reactive;
 
 use Aws\S3\S3Client;
 use Illuminate\Http\Request;

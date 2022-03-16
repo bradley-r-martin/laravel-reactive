@@ -1,6 +1,6 @@
 <?php
 
-namespace Sihq\Reactive\Models;
+namespace Sihq\Models;
 
 // Illuminate
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +11,7 @@ use Illuminate\Support\Str;
 use GuzzleHttp\Psr7\MimeType;
 
 // Traits
-use Sihq\Reactive\Traits\UuidTrait;
+use Sihq\Traits\UuidTrait;
 
 class File extends Model
 {
