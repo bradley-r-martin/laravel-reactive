@@ -11,7 +11,11 @@ class Thread{
 
     public function __construct($payload){
         $this->_payload = $payload;
-        $this->_controller = $payload->controller();
+        try{
+            $this->_controller = $payload->controller();
+        }catch(\Illuminate\Http\Exceptions\HttpResponseException $e){
+            $this->_redirect = $e->getResponse()->getTargetUrl();
+        }
     }
 
     public function execute($func){

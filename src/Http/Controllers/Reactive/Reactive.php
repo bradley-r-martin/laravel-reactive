@@ -50,12 +50,12 @@ class Reactive{
         $threads->filter(function($thread){
             return $thread->payload()->action() === 'onMount';
         })->map(function($thread){
-            $thread->execute(function() use($thread){ $thread->controller()->onMount(); });
+            optional($thread)->execute(function() use($thread){ optional($thread->controller())->onMount(); });
         });
 
         // Run all controllers onDispatch
         $threads->map(function($thread){
-            if(method_exists($thread->controller(),'onDispatch')){
+            if($thread->controller() && method_exists($thread->controller(),'onDispatch')){
                 $thread->execute(function() use($thread){ $thread->controller()->onDispatch(); });
             }
         });
