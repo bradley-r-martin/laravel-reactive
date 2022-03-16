@@ -32,6 +32,10 @@ class Controller{
         throw new \Illuminate\Http\Exceptions\HttpResponseException(redirect($to));
     }
 
+    public function authorise(){
+
+    }
+
     // Hydrate the payload state into the controller
     protected function hydrate(){
         $state = $this->_payload->state();
