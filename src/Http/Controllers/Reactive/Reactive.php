@@ -41,7 +41,7 @@ class Reactive{
             return $thread->payload()->action() === 'onRequest';
         })->map(function($thread){
             $event = $thread->payload()->event();
-            if(method_exists($thread->controller(),$event)){
+            if($thread->controller() && method_exists($thread->controller(),$event)){
                 $thread->execute(function() use($thread, $event){ $thread->controller()->$event(); });
             }
         });
@@ -56,7 +56,7 @@ class Reactive{
         // Run all controllers onDispatch
         $threads->map(function($thread){
             if($thread->controller() && method_exists($thread->controller(),'onDispatch')){
-                $thread->execute(function() use($thread){ $thread->controller()->onDispatch(); });
+                $thread->execute(function() use($thread){ optional($thread->controller())->onDispatch(); });
             }
         });
 
