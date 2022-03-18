@@ -32,8 +32,10 @@ class Controller{
         throw new \Illuminate\Http\Exceptions\HttpResponseException(redirect($to));
     }
 
-    public function authorise(){
-
+    public function authorise($action, $model = null){
+        if(auth()->user()->cannot($action,$model)){
+            $this->redirect('/');
+        }
     }
 
     // Hydrate the payload state into the controller

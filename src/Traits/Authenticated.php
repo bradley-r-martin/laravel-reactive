@@ -13,10 +13,6 @@ trait Authenticated
         }
     }
 
-    public function authorise($action, $model = null){
-        if(auth()->user()->cannot($action,$model)){
-            $this->redirect('/');
-        }
-    }
+
     
 }
