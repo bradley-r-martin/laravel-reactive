@@ -48,8 +48,8 @@ class Controller{
             }catch(\Exception $e){}
             if($type){
                 $model_key = optional(new $type)->getKeyName();
-                if(optional($value)[$model_key]){
-                    $model = (new $type)->find(optional($value)[$model_key]);
+                if(optional($value)->{$model_key}){
+                    $model = (new $type)->find(optional($value)->{$model_key});
                     if($model && !is_null($value)){
                         $model->fill((array) $value);
                         $this->{$key} = $model;
