@@ -16,7 +16,7 @@ class FileCast implements Castable
             public function get($model, $key, $value, $attributes)
             {
                 if ($value) {
-                    return new File($value);
+                    return new File(json_decode($value));
                 }
                 return new File();
             }
@@ -24,7 +24,7 @@ class FileCast implements Castable
             public function set($model, $key, $value, $attributes)
             {
                 if ($value) {
-                    return (array) $value;
+                    return json_encode($value);
                 }
                 return null;
             }

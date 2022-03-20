@@ -17,16 +17,23 @@ class File{
     protected $_meta;
     protected $_status;
 
+    protected $_store;
+
+    protected $_region;
+    protected $_bucket;
+
     public function __construct($data = null){
         if($data){
-            $this->_id = optional($data)['id'];
-            $this->_name = optional($data)['name'];
-            $this->_extension = optional($data)['extension'];
-            $this->_mime = optional($data)['mime'];
-            $this->_size = optional($data)['size'];
-            $this->_meta = optional($data)['meta'];
-            $this->_status = optional($data)['status'];
+            $this->_id = optional($data)->{'id'};
+            $this->_name = optional($data)->{'name'};
+            $this->_extension = optional($data)->{'extension'};
+            $this->_mime = optional($data)->{'mime'};
+            $this->_size = optional($data)->{'size'};
+            $this->_meta = optional($data)->{'meta'};
+            $this->_status = optional($data)->{'status'};
+            $this->_store = optional($data)->{'store'};
         }
+        return $this;
     }
 
     public function id(){
@@ -68,20 +75,20 @@ class File{
     {
         if (!$unmetered) {
             if (
-                Storage::size(config('files.staging')."/".$this->id()) >
+                Storage::size(config('sihq.files.directories.staging')."/".$this->id()) >
                 (optional(optional(auth()->user())->storage())["available"] ?? 0)
             ) {
                 return false;
             }
         }
-        if (Storage::copy(config('files.staging')."/".$this->id(),config('files.persisted')."/".$this->id())) {
+        if (Storage::copy(config('sihq.files.directories.staging')."/".$this->id(),config('sihq.files.directories.persisted')."/".$this->id())) {
             // $original = $this->original;
             $this->_status = "persisted";
 
             // set meta data.
             $meta = [];
-            $size = Storage::size(config('files.persisted') . $this->id());
-            $meta['last_modified'] = Storage::lastModified(config('files.persisted') . $this->id());
+            $size = Storage::size(config('sihq.files.directories.persisted') . $this->id());
+            $meta['last_modified'] = Storage::lastModified(config('sihq.files.directories.persisted') . $this->id());
             $mime = (new MimeType())->fromFilename($this->name());
             switch ($mime) {
                 case "image/gif":
@@ -109,7 +116,7 @@ class File{
 
     public function archive(){
         try {
-            if (Storage::copy(config('files.persisted')."/".$this->id(),config('files.archived')."/".$this->id())) {
+            if (Storage::copy(config('sihq.files.directories.persisted')."/".$this->id(),config('sihq.files.directories.archived')."/".$this->id())) {
                 $this->_status = "archived";
                 return true;
             }
@@ -120,7 +127,7 @@ class File{
 
     public function unarchive(){
         try {
-            if (Storage::copy(config('files.archived')."/".$this->id(), config('files.persisted')."/".$this->id())) {
+            if (Storage::copy(config('sihq.files.directories.archived')."/".$this->id(), config('sihq.files.directories.persisted')."/".$this->id())) {
                 $this->_status = "persisted";
                 return true;
             }
@@ -131,7 +138,7 @@ class File{
 
     public function purge(){
         try {
-            if (Storage::delete(config('files.archived')."/".$this->id())) {
+            if (Storage::delete(config('sihq.files.directories.archived')."/".$this->id())) {
                 $this->_id = null;
                 $this->_name = null;
                 $this->_extension = null;

@@ -51,7 +51,10 @@ class Controller{
                 if(optional($value)->{$model_key}){
                     $model = (new $type)->find(optional($value)->{$model_key});
                     if($model && !is_null($value)){
-                        $model->fill((array) $value);
+
+                        $this->hydrate_model_attributes($model,(array)$value);
+
+                
                         $this->{$key} = $model;
                     }else{
                         $this->{$key} = (new $type)->fill((array) $value ?? []);
@@ -66,6 +69,25 @@ class Controller{
             }
         }
     }
+
+    protected function hydrate_model_attributes($model,$attributes){
+
+        $casts = $model->getCasts();
+
+        collect($attributes)->map(function($value, $key) use ($model, $casts){
+            
+            if(optional($casts)[$key]){
+                $castable = optional($casts)[$key];
+                $castableClass = (new $castable)->castUsing([]);
+                $model->setAttribute($key, $castableClass->get($model, $key, json_encode((array) $value), []));
+            }else{
+                $model->setAttribute($key,$value);
+            }
+        });
+        return $model;
+    }
+
+
     // dehydate the controller state
     protected function dehydrate(){
         $protected = ['_payload','rules'];
