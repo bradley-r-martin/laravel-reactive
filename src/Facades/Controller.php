@@ -48,20 +48,21 @@ class Controller{
             }catch(\Exception $e){}
             if($type){
                 $model_key = optional(new $type)->getKeyName();
-                if(optional($value)->{$model_key}){
-                    $model = (new $type)->find(optional($value)->{$model_key});
+                if(optional($value)[$model_key]){
+                    $model = (new $type)->find(optional($value)[$model_key]);
                     if($model && !is_null($value)){
-
                         $this->hydrate_model_attributes($model,(array)$value);
-
-                
                         $this->{$key} = $model;
                     }else{
-                        $this->{$key} = (new $type)->fill((array) $value ?? []);
+                        $model = (new $type);
+                        $this->hydrate_model_attributes($model,(array)$value);
+                        $this->{$key} = $model;
                     }
                    
                 }else{
-                    $this->{$key} = (new $type)->fill((array) $value ?? []);
+                    $model = (new $type);
+                    $this->hydrate_model_attributes($model,(array)$value);
+                    $this->{$key} = $model;
                 }
              
             }else{
