@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 
 use GuzzleHttp\Psr7\MimeType;
 
-class File{
+class File implements \JsonSerializable {
 
     protected $_id;
     protected $_name;
@@ -23,6 +23,7 @@ class File{
     protected $_bucket;
 
     public function __construct($data = null){
+       
         if($data){
             $this->_id = optional($data)->{'id'};
             $this->_name = optional($data)->{'name'};
@@ -57,8 +58,14 @@ class File{
     public function status(){
         return $this->_status;
     }
+    public function url(){
+        $directory = config('sihq.directories.'.$this->status());
+        return "https://foremind-prod-bucket.s3.ap-southeast-2.amazonaws.com/".$directory."/".$this->id();
+    }
+    
 
-    public function __serialize(): array
+
+    public function toArray(): array
     {
         return [
           'id' => $this->id(),
@@ -68,28 +75,46 @@ class File{
           'size' => $this->size(),
           'meta' => $this->meta(),
           'status' => $this->status(),
+          'url'=> $this->url()
         ];
+    }
+
+    public function jsonSerialize() {
+        return $this->toArray();
+    }
+
+    public function __serialize() 
+    {
+        return $this->toArray();
+    }
+
+    public function __toString()
+    {
+        return json_encode($this->toArray());
     }
 
     public function persist($unmetered = false)
     {
         if (!$unmetered) {
             if (
-                Storage::size(config('sihq.files.directories.staging')."/".$this->id()) >
+                Storage::size(config('sihq.directories.staging')."/".$this->id()) >
                 (optional(optional(auth()->user())->storage())["available"] ?? 0)
             ) {
                 return false;
             }
         }
-        if (Storage::copy(config('sihq.files.directories.staging')."/".$this->id(),config('sihq.files.directories.persisted')."/".$this->id())) {
+       
+
+        if (Storage::move(config('sihq.directories.staging')."/".$this->id(),config('sihq.directories.persisted')."/".$this->id())) {
             // $original = $this->original;
+           
             $this->_status = "persisted";
 
             // set meta data.
             $meta = [];
-            $size = Storage::size(config('sihq.files.directories.persisted') . $this->id());
-            $meta['last_modified'] = Storage::lastModified(config('sihq.files.directories.persisted') . $this->id());
-            $mime = (new MimeType())->fromFilename($this->name());
+            $size = Storage::size(config('sihq.directories.persisted')."/" . $this->id());
+            $meta['last_modified'] = Storage::lastModified(config('sihq.directories.persisted')."/" . $this->id());
+            $mime = (new MimeType())->fromFilename($this->id());
             switch ($mime) {
                 case "image/gif":
                 case "image/jpeg":
@@ -99,14 +124,10 @@ class File{
                     break;
             }
     
-            $this->_meta = object($meta);
+            $this->_meta = (object) $meta;
             $this->_size = $size;
             $this->_mime = $mime;
             
-            // if (!empty(optional($original)["id"]) && $original["id"] !== $this->id) {
-            //     // Keep a copy of the original. But mark as deleted.
-            //     File::create($original)->delete();
-            // }
             return true;
         } else {
             abort(500);
@@ -116,7 +137,7 @@ class File{
 
     public function archive(){
         try {
-            if (Storage::copy(config('sihq.files.directories.persisted')."/".$this->id(),config('sihq.files.directories.archived')."/".$this->id())) {
+            if (Storage::copy(config('sihq.directories.persisted')."/".$this->id(),config('sihq.directories.archived')."/".$this->id())) {
                 $this->_status = "archived";
                 return true;
             }
@@ -127,7 +148,7 @@ class File{
 
     public function unarchive(){
         try {
-            if (Storage::copy(config('sihq.files.directories.archived')."/".$this->id(), config('sihq.files.directories.persisted')."/".$this->id())) {
+            if (Storage::copy(config('sihq.directories.archived')."/".$this->id(), config('sihq.directories.persisted')."/".$this->id())) {
                 $this->_status = "persisted";
                 return true;
             }
@@ -137,8 +158,9 @@ class File{
     }
 
     public function purge(){
+        $directory = config('sihq.directories.'.$this->status());
         try {
-            if (Storage::delete(config('sihq.files.directories.archived')."/".$this->id())) {
+            if (Storage::delete($directory."/".$this->id())) {
                 $this->_id = null;
                 $this->_name = null;
                 $this->_extension = null;
