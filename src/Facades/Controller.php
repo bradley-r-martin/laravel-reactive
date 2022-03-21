@@ -100,8 +100,12 @@ class Controller{
                 try{
                     $type = optional((new \ReflectionProperty($this, $property))->getType())->getName();
                 }catch(\Exception $e){}
-
                 $object = collect($variable)->toArray();
+
+             
+            
+
+
                 return (count($object) > 0 ?   $object : null);
             }else if(is_array($variable)){
                 return $variable;

@@ -4,6 +4,6 @@ return [
     'directories' => [
         'archived'=> 'archived',
         'persisted'=> 'persisted',
-        'staging'=> 'temp'
+        'staging'=> 'tmp'
     ]
 ];

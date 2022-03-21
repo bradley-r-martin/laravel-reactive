@@ -23,8 +23,9 @@ class FileCast implements Castable
 
             public function set($model, $key, $value, $attributes)
             {
+             
                 if ($value) {
-                    return json_encode($value);
+                    return json_encode($value->toArray());
                 }
                 return null;
             }
