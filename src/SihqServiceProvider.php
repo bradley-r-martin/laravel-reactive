@@ -4,13 +4,24 @@ namespace Sihq;
 
 use Illuminate\Support\ServiceProvider;
 
+use Sihq\Rules\PhoneRule;
+use Sihq\Rules\AddressRule;
+
+
 class SihqServiceProvider extends ServiceProvider
 {
     public function boot()
     {
 
-        $this->loadRoutesFrom(__DIR__.'/routes.php');
+        $this->loadViewsFrom(__DIR__.'/../views', 'sihq');
+
+        if(!env('reactive')){
+            $this->loadRoutesFrom(__DIR__.'/routes.php');
+        }
         // $this->loadMigrationsFrom(__DIR__.'/Migrations');
+
+        \Validator::extend("phone", PhoneRule::class);
+        \Validator::extend("address", AddressRule::class);
     }
 
 

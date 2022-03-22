@@ -74,15 +74,17 @@ class Controller{
     protected function hydrate_model_attributes($model,$attributes){
 
         $casts = $model->getCasts();
-
-        collect($attributes)->map(function($value, $key) use ($model, $casts){
-            
-            if(optional($casts)[$key]){
-                $castable = optional($casts)[$key];
-                $castableClass = (new $castable)->castUsing([]);
-                $model->setAttribute($key, $castableClass->get($model, $key, json_encode((array) $value), []));
-            }else{
-                $model->setAttribute($key,$value);
+        $fillable = $model->getFillable();
+    
+        collect($attributes)->map(function($value, $key) use ($model, $casts, $fillable){
+            if(in_array($key,  $fillable)){
+                if(optional($casts)[$key] && class_exists(optional($casts)[$key])){
+                    $castable = optional($casts)[$key];
+                    $castableClass = (new $castable)->castUsing([]);
+                    $model->setAttribute($key, $castableClass->get($model, $key, json_encode((array) $value), []));
+                }else{
+                    $model->setAttribute($key,$value);
+                }
             }
         });
         return $model;
