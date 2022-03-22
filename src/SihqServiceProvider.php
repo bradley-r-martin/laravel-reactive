@@ -13,7 +13,7 @@ class SihqServiceProvider extends ServiceProvider
     public function boot()
     {
 
-        $this->loadViewsFrom(__DIR__.'/../views', 'sihq');
+        $this->loadViewsFrom(__DIR__.'/Views', 'sihq');
 
         if(!env('reactive')){
             $this->loadRoutesFrom(__DIR__.'/routes.php');
