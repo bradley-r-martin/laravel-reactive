@@ -1,53 +1,44 @@
 <?php
 
 namespace Sihq\Casts;
-
+use Illuminate\Contracts\Database\Eloquent\Castable;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 
-class PhoneCast implements CastsAttributes
+
+class PhoneCast implements Castable
 {
-    /**
-     * Cast the given value.
-     *
-     * @param  \Illuminate\Database\Eloquent\Model  $model
-     * @param  string  $key
-     * @param  mixed  $value
-     * @param  array  $attributes
-     * @return mixed
-     */
-    public function get($model, string $key, $value, array $attributes)
+    public static function castUsing(array $arguments)
     {
-        if (is_null($value)) {
-            return (object) ["country" => "AU", "number" => ""];
-        }
-        return (object) json_decode($value);
-    }
-
-    /**
-     * Prepare the given value for storage.
-     *
-     * @param  \Illuminate\Database\Eloquent\Model  $model
-     * @param  string  $key
-     * @param  mixed  $value
-     * @param  array  $attributes
-     * @return mixed
-     */
-    public function set($model, string $key, $value, array $attributes)
-    {
-        $phone = (object) $value;
-        if (isset($value->number) && isset($value->country)) {
-            $phoneUtil = \libphonenumber\PhoneNumberUtil::getInstance();
-            try {
-                $numberProto = $phoneUtil->parse($value->number, $value->country);
-                $isValid = $phoneUtil->isValidNumber($numberProto);
-                if ($isValid) {
-                    $phone->number = $numberProto->getNationalNumber();
-                    $phone->prased = $phoneUtil->format($numberProto, \libphonenumber\PhoneNumberFormat::NATIONAL);
+        return new class implements CastsAttributes {
+            public function get($model, $key, $value, $attributes)
+            {
+                if (is_null($value)) {
+                    return (object) ["country" => "AU", "number" => ""];
                 }
-            } catch (\libphonenumber\NumberParseException $e) {
+                return (object) json_decode($value);
             }
-        }
 
-        return json_encode($phone);
+            public function set($model, $key, $value, $attributes)
+            {
+                $phone = (object) $value;
+                if (isset($value->number) && isset($value->country)) {
+                    $phoneUtil = \libphonenumber\PhoneNumberUtil::getInstance();
+                    try {
+                        $numberProto = $phoneUtil->parse($value->number, $value->country);
+                        $isValid = $phoneUtil->isValidNumber($numberProto);
+                        if ($isValid) {
+                            $phone->number = $numberProto->getNationalNumber();
+                            $phone->prased = $phoneUtil->format($numberProto, \libphonenumber\PhoneNumberFormat::NATIONAL);
+                        }
+                    } catch (\libphonenumber\NumberParseException $e) {
+                    }
+                }
+        
+                return json_encode($phone);
+            }
+        };
     }
 }
+
+
+
